@@ -2,7 +2,9 @@ use std::cmp::max;
 
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
-
+use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+use anchor_spl::token::{self, Token, TokenAccount, Transfer as SplTransfer};
+use solana_program::system_instruction;
 use crate::errors::*;
 use crate::id;
 
@@ -248,6 +250,25 @@ impl Multisig {
 
         Ok(())
     }
+    pub fn transfer_spl_tokens(ctx: Context<TransferSpl>, amount: u64) -> Result<()> {
+        let destination = &ctx.accounts.to_ata;
+        let source = &ctx.accounts.from_ata;
+        let token_program = &ctx.accounts.token_program;
+        let authority = &ctx.accounts.from;
+
+        // Transfer tokens from taker to initializer
+        let cpi_accounts = SplTransfer {
+            from: source.to_account_info().clone(),
+            to: destination.to_account_info().clone(),
+            authority: authority.to_account_info().clone(),
+        };
+        let cpi_program = token_program.to_account_info();
+        
+        token::transfer(
+            CpiContext::new(cpi_program, cpi_accounts),
+            amount)?;
+        Ok(())
+    }
 
 
     ///Function that transfer token
@@ -275,8 +296,60 @@ impl Multisig {
 
         Ok(())       
     }
+    pub fn transfer_token(
+            ctx: Context<TransferToMultisig>, 
+            employer_amount: u64, 
+            employee_amount: u64, 
+            dao_amount: u64,
+            platform_amount: u64,
+        ) -> Result<()> {  
+        // Transfer tokens from multisig wallet to the employer           
+        let employer_transfer_ctx = ctx::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                to: ctx.accounts.employer_token_account.to_account_info().clone(),
+                authority: ctx.accounts.employer_authority.to_account_info().clone(),
 
-}
+            },
+        );
+        token::transfer(employer_transfer_ctx, employer_amount)?;
+
+        // Transfer tokens from multisig wallet to the employee
+        let employee_transfer_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                to: ctx.accounts.employee_token_account.to_account_info().clone(),
+                authority: ctx.accounts.employee_authority.to_account_info().clone(),
+            },
+        );
+        token::transfer(employee_transfer_ctx, employee_amount)?;
+        
+        // Transfer tokens from multisig wallet to the DAO
+        let dao_transfer_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                to: ctx.accounts.dao_token_account.to_account_info().clone(),
+                authority: ctx.accounts.dao_authority.to_account_info().clone(),
+                
+            },
+        );
+        token::transfer(employee_transfer_ctx, dao_amount)?;
+
+        // Transfer tokens from multisig wallet to the DAO
+        let platform_transfer_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                to: ctx.accounts.platform_token_account.to_account_info().clone(),
+                authority: ctx.accounts.platform_authority.to_account_info().clone(),
+            },
+        );
+        token::transfer(platform_transfer_ctx, platform_amount)?;
+        Ok(())       
+    }
 
 #[derive(AnchorDeserialize, AnchorSerialize, InitSpace, Eq, PartialEq, Clone)]
 pub struct Member {
@@ -324,7 +397,14 @@ pub struct TransferToMultisig<'info> {
     pub employee_token_account: Account<'info, TokenAccount>,
     /// CHECK: This is only used as a signing authority and not for data storage
     pub employee_authority: AccountInfo<'info>,
+    pub dao_authority: AccountInfo<'info>,
+    pub platform_authority: AccountInfo<'info>,
+
     #[account(mut)]
     pub multisig_token_account: Account<'info, TokenAccount>,
+    pub dao_token_account: Account<'info, TokenAccount>,
+    pub platform_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
+
 }
+

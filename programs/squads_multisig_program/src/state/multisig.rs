@@ -250,26 +250,6 @@ impl Multisig {
 
         Ok(())
     }
-    pub fn transfer_spl_tokens(ctx: Context<TransferSpl>, amount: u64) -> Result<()> {
-        let destination = &ctx.accounts.to_ata;
-        let source = &ctx.accounts.from_ata;
-        let token_program = &ctx.accounts.token_program;
-        let authority = &ctx.accounts.from;
-
-        // Transfer tokens from taker to initializer
-        let cpi_accounts = SplTransfer {
-            from: source.to_account_info().clone(),
-            to: destination.to_account_info().clone(),
-            authority: authority.to_account_info().clone(),
-        };
-        let cpi_program = token_program.to_account_info();
-        
-        token::transfer(
-            CpiContext::new(cpi_program, cpi_accounts),
-            amount)?;
-        Ok(())
-    }
-
 
     ///Function that transfer token
     pub fn accept_gig(ctx: Context<TransferToMultisig>, employer_amount: u64, employee_amount: u64,) -> Result<()> {
@@ -296,6 +276,8 @@ impl Multisig {
 
         Ok(())       
     }
+
+
     pub fn transfer_token(
             ctx: Context<TransferToMultisig>, 
             employer_amount: u64, 
@@ -350,6 +332,7 @@ impl Multisig {
         token::transfer(platform_transfer_ctx, platform_amount)?;
         Ok(())       
     }
+
 
 #[derive(AnchorDeserialize, AnchorSerialize, InitSpace, Eq, PartialEq, Clone)]
 pub struct Member {
@@ -406,5 +389,14 @@ pub struct TransferToMultisig<'info> {
     pub platform_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
 
+}
+
+
+#[account]
+pub struct Amount {
+    employer_amount: u64, 
+    employee_amount: u64, 
+    dao_amount: u64,
+    platform_amount: u64,
 }
 

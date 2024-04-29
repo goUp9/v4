@@ -264,30 +264,75 @@ impl<'info> ConfigTransactionExecute<'info> {
                 ConfigAction::AcceptGig { employer_amount, employee_amount} => {
                     multisig.accept_gig();
                 }
-                ConfigAction::NotResponseEmployer { nnot_response_intimeew_gig } => {
-                    multisig.threshold = *new_gig;
-
-                    multisig.invalidate_prior_transactions();
+                ConfigAction::NotResponseEmployer { 
+                    employer_amount: u64, 
+                    employee_amount: u64, 
+                    dao_amount: u64,
+                    platform_amount: u64,
+                 } => {
+                    multisig.transfer_token(
+                        employer_amount, 
+                        employee_amount, 
+                        dao_amount,
+                        platform_amount,
+                    );
                 }
-                ConfigAction::SatisfiedEmployer { satisfied_employer } => {
-                    multisig.threshold = *new_gig;
+                ConfigAction::SatisfiedEmployer { 
+                    employer_amount: u64, 
+                    employee_amount: u64, 
+                    dao_amount: u64,
+                    platform_amount: u64,
+                 } => {
 
-                    multisig.invalidate_prior_transactions();
+                    multisig.transfer_token(
+                        employer_amount, 
+                        employee_amount, 
+                        dao_amount,
+                        platform_amount,
+                    );
                 }
-                ConfigAction::SplitGigNotDispute { split_gig_notDispute } => {
-                    multisig.threshold = *new_gig;
 
-                    multisig.invalidate_prior_transactions();
+                ConfigAction::DAOAgreeWithEmployer { 
+                    employer_amount: u64, 
+                    employee_amount: u64, 
+                    dao_amount: u64,
+                    platform_amount: u64,
+                 } => {
+
+                    multisig.transfer_token(
+                        employer_amount, 
+                        employee_amount, 
+                        dao_amount,
+                        platform_amount,
+                    );
                 }
-                ConfigAction::EmployerWinnedInDispute { employee_winned } => {
-                    multisig.threshold = *new_gig;
+                ConfigAction::DAOSplitPayment { 
+                    employer_amount: u64, 
+                    employee_amount: u64, 
+                    dao_amount: u64,
+                    platform_amount: u64,
+                 } => {
 
-                    multisig.invalidate_prior_transactions();
+                    multisig.transfer_token(
+                        employer_amount, 
+                        employee_amount, 
+                        dao_amount,
+                        platform_amount,
+                    );
                 }
-                ConfigAction::SplitPaymentByDAO { split_payment_by_dao } => {
-                    multisig.threshold = *new_gig;
+                ConfigAction::DAOAgreeWithEmployee { 
+                    employer_amount: u64, 
+                    employee_amount: u64, 
+                    dao_amount: u64,
+                    platform_amount: u64,
+                 } => {
 
-                    multisig.invalidate_prior_transactions();
+                    multisig.transfer_token(
+                        employer_amount, 
+                        employee_amount, 
+                        dao_amount,
+                        platform_amount,
+                    );
                 }
             }
         }

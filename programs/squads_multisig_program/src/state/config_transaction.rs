@@ -80,17 +80,41 @@ pub enum ConfigAction {
     /// Accept the employer's gig.
     AcceptGig { employer_amount: u64, employee_amount: u64, },
     /// The case that employer does not response in time.
-    NotResponseEmployer {not_response_intime: Member},
+    NotResponseEmployer {
+        employer_amount: u64, 
+        employee_amount: u64, 
+        dao_amount: u64,
+        platform_amount: u64,
+    },
     ///Employer is satisfied by the employee's work.
-    SatisfiedEmployer {satisfied_employer: Member},
-    ///Split the gig result before dispute.
-    SplitGigNotDispute {split_gig_notDispute: Member},
+    SatisfiedEmployer {
+        employer_amount: u64, 
+        employee_amount: u64, 
+        dao_amount: u64,
+        platform_amount: u64,
+    },
+
     ///Employer is winner in the dispute.
-    EmployerWinnedInDispute {employer_winned: Member},
-    ///Employee is winner in the dispute.
-    EmployeeWinnedInDisut {employee_winned: Member},
+    DAOAgreeWithEmployer {
+        employer_amount: u64, 
+        employee_amount: u64, 
+        dao_amount: u64,
+        platform_amount: u64,
+    },
     ///Split the payment by DAO
-    SplitPaymentByDAO {split_payment_by_dao: Member},
+    DAOSplitPayment {
+        employer_amount: u64, 
+        employee_amount: u64, 
+        dao_amount: u64,
+        platform_amount: u64,
+    },
+    ///Employee is winner in the dispute.
+    DAOAgreeWithEmployee {
+        employer_amount: u64, 
+        employee_amount: u64, 
+        dao_amount: u64,
+        platform_amount: u64,
+    },
 
 
 }

@@ -78,7 +78,7 @@ pub enum ConfigAction {
     
     
     /// Accept the employer's gig.
-    AcceptGig { new_gig: Member },
+    AcceptGig { employer_amount: u64, employee_amount: u64, },
     /// The case that employer does not response in time.
     NotResponseEmployer {not_response_intime: Member},
     ///Employer is satisfied by the employee's work.

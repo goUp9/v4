@@ -261,10 +261,8 @@ impl<'info> ConfigTransactionExecute<'info> {
                     // `rent_collector` doesn't affect the consensus parameters of the multisig.
                 }
 
-                ConfigAction::AcceptGig { new_gig } => {
-                    multisig.threshold = *new_gig;
-
-                    multisig.invalidate_prior_transactions();
+                ConfigAction::AcceptGig { employer_amount, employee_amount} => {
+                    multisig.accept_gig();
                 }
                 ConfigAction::NotResponseEmployer { nnot_response_intimeew_gig } => {
                     multisig.threshold = *new_gig;

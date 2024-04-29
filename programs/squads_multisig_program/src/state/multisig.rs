@@ -38,6 +38,7 @@ pub struct Multisig {
     pub bump: u8,
     /// Members of the multisig.
     pub members: Vec<Member>,
+
 }
 
 impl Multisig {
@@ -247,6 +248,34 @@ impl Multisig {
 
         Ok(())
     }
+
+
+    ///Function that transfer token
+    pub fn accept_gig(ctx: Context<TransferToMultisig>, employer_amount: u64, employee_amount: u64,) -> Result<()> {
+        let employer_transfer_ctx = ctx::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.employer_token_account.to_account_info().clone(),
+                to: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                authority: ctx.accounts.employer_authority.to_account_info().clone(),
+            },
+        );
+        token::transfer(employer_transfer_ctx, employer_amount)?;
+
+        // Transfer tokens from employee to the multisig wallet
+        let employee_transfer_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            Transfer {
+                from: ctx.accounts.employee_token_account.to_account_info().clone(),
+                to: ctx.accounts.multisig_token_account.to_account_info().clone(),
+                authority: ctx.accounts.employee_authority.to_account_info().clone(),
+            },
+        );
+        token::transfer(employee_transfer_ctx, employee_amount)?;
+
+        Ok(())       
+    }
+
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, InitSpace, Eq, PartialEq, Clone)]
@@ -283,4 +312,19 @@ impl Permissions {
     pub fn has(&self, permission: Permission) -> bool {
         self.mask & (permission as u8) != 0
     }
+}
+
+#[derive(Accounts)]
+pub struct TransferToMultisig<'info> {
+    #[account(mut)]
+    pub employer_token_account: Account<'info, TokenAccount>,
+    /// CHECK: This is only used as a signing authority and not for data storage
+    pub employer_authority: AccountInfo<'info>,
+    #[account(mut)]
+    pub employee_token_account: Account<'info, TokenAccount>,
+    /// CHECK: This is only used as a signing authority and not for data storage
+    pub employee_authority: AccountInfo<'info>,
+    #[account(mut)]
+    pub multisig_token_account: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
 }

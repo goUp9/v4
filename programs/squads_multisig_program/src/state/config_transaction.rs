@@ -75,4 +75,22 @@ pub enum ConfigAction {
     RemoveSpendingLimit { spending_limit: Pubkey },
     /// Set the `rent_collector` config parameter of the multisig.
     SetRentCollector { new_rent_collector: Option<Pubkey> },
+    
+    
+    /// Accept the employer's gig.
+    AcceptGig { new_gig: Member },
+    /// The case that employer does not response in time.
+    NotResponseEmployer {not_response_intime: Member},
+    ///Employer is satisfied by the employee's work.
+    SatisfiedEmployer {satisfied_employer: Member},
+    ///Split the gig result before dispute.
+    SplitGigNotDispute {split_gig_notDispute: Member},
+    ///Employer is winner in the dispute.
+    EmployerWinnedInDispute {employer_winned: Member},
+    ///Employee is winner in the dispute.
+    EmployeeWinnedInDisut {employee_winned: Member},
+    ///Split the payment by DAO
+    SplitPaymentByDAO {split_payment_by_dao: Member},
+
+
 }

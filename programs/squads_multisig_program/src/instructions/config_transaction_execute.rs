@@ -260,6 +260,37 @@ impl<'info> ConfigTransactionExecute<'info> {
                     // We don't need to invalidate prior transactions here because changing
                     // `rent_collector` doesn't affect the consensus parameters of the multisig.
                 }
+
+                ConfigAction::AcceptGig { new_gig } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
+                ConfigAction::NotResponseEmployer { nnot_response_intimeew_gig } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
+                ConfigAction::SatisfiedEmployer { satisfied_employer } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
+                ConfigAction::SplitGigNotDispute { split_gig_notDispute } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
+                ConfigAction::EmployerWinnedInDispute { employee_winned } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
+                ConfigAction::SplitPaymentByDAO { split_payment_by_dao } => {
+                    multisig.threshold = *new_gig;
+
+                    multisig.invalidate_prior_transactions();
+                }
             }
         }
 

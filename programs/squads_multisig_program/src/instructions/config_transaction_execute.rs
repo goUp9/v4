@@ -261,7 +261,7 @@ impl<'info> ConfigTransactionExecute<'info> {
                     // `rent_collector` doesn't affect the consensus parameters of the multisig.
                 }
 
-                ConfigAction::AcceptGig { employer_amount, employee_amount} => {
+                ConfigAction::AcceptGig { payment} => {
                     multisig.accept_gig();
                 }
                 ConfigAction::NotResponseEmployer { 

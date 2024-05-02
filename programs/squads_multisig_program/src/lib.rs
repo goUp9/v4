@@ -21,7 +21,6 @@ pub mod state;
 mod utils;
 
 
-
 #[cfg(not(feature = "testing"))]
 declare_id!("SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf");
 
